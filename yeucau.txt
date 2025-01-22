@@ -1,0 +1,51 @@
+  
+Hãy giúp tôi tạo một ứng dụng quản lý hình ảnh gia đình chạy trên nền tảng website với các yêu cầu sau:  
+
+### 1. **Chức năng chính**  
+- **Tải lên hình ảnh**: 
+  - Người dùng có thể tải lên hình ảnh từ máy tính.  
+  - Hỗ trợ định dạng: JPEG, PNG.  
+- **Quản lý album**:  
+  - Tạo, sửa, xóa album để nhóm các hình ảnh theo sự kiện hoặc năm tháng.  
+  - Hỗ trợ đặt tên và mô tả cho album.  
+- **Xem và tìm kiếm hình ảnh**:  
+  - Hiển thị hình ảnh theo dạng lưới hoặc trình chiếu.  
+  - Tìm kiếm hình ảnh theo tên, mô tả hoặc album.  
+- **Chia sẻ hình ảnh**:  
+  - Tạo liên kết để chia sẻ album hoặc hình ảnh riêng lẻ.  
+  - Liên kết có thể được bảo vệ bằng mật khẩu.  
+- **Quản lý thành viên gia đình**:  
+  - Thêm các thành viên gia đình để họ có thể cùng sử dụng.  
+  - Hỗ trợ cấp quyền: chỉ xem, tải lên, hoặc quản lý.  
+
+### 2. **Yêu cầu giao diện**  
+- Giao diện thân thiện và dễ sử dụng, tối ưu trên desktop và tablet.  
+- Hỗ trợ chế độ sáng/tối (light/dark mode).  
+
+### 3. **Yêu cầu kỹ thuật**  
+- **Frontend**:  
+  - Sử dụng React để xây dựng giao diện người dùng.  
+- **Backend**:  
+  - Node.js + Express để xử lý API.  
+  - Lưu trữ hình ảnh trên AWS S3 hoặc Cloudinary.  
+  - Cơ sở dữ liệu: MongoDB để lưu trữ thông tin hình ảnh và album.  
+- **Triển khai**:  
+  - Triển khai trên Vercel hoặc Netlify.  
+
+### 4. **Tích hợp API**  
+- Tích hợp API đăng nhập bằng Google hoặc Facebook.  
+- Hỗ trợ đăng nhập 2 yếu tố (Two-Factor Authentication) để tăng bảo mật.  
+
+### 5. **Phân quyền người dùng**  
+- Quản trị viên (Admin): Quản lý toàn bộ album, hình ảnh và thành viên.  
+- Thành viên gia đình: Được phân quyền xem hoặc tải lên hình ảnh.  
+
+### 6. **Lộ trình phát triển**  
+1. Tạo cấu trúc cơ bản của ứng dụng (frontend và backend).  
+2. Xây dựng module đầu tiên: **Tải lên và hiển thị hình ảnh**.  
+3. Phát triển tính năng quản lý album và người dùng.  
+4. Tích hợp tính năng chia sẻ và bảo mật liên kết.  
+5. Kiểm thử toàn bộ ứng dụng và sửa lỗi.  
+6. Triển khai website lên môi trường sản xuất.  
+
+Hãy bắt đầu bằng việc tạo giao diện cơ bản và module tải lên hình ảnh.  
