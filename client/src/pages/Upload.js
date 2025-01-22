@@ -23,7 +23,6 @@ import CategoryManager from '../components/CategoryManager';
 
 const Upload = () => {
   const navigate = useNavigate();
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [defaultCategory, setDefaultCategory] = useState('Khác');
@@ -92,8 +91,6 @@ const Upload = () => {
       return true;
     });
 
-    setSelectedFiles(validFiles);
-    
     // Tạo preview cho các file với category được chọn hiện tại
     const previews = validFiles.map(file => ({
       file,
@@ -161,7 +158,6 @@ const Upload = () => {
       alert('Upload thất bại: ' + error.message);
     } finally {
       setUploading(false);
-      setSelectedFiles([]);
     }
   };
 

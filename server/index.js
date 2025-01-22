@@ -9,7 +9,7 @@ const categoryRoutes = require('./routes/categories');
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://your-frontend-domain.vercel.app']
+  origin: ['http://localhost:3000', 'https://imagefamily.vercel.app']
 }));
 app.use(express.json());
 

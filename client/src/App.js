@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, Box, Container } from '@mui/material';
-import { useState } from 'react';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Upload from './pages/Upload';
 import Home from './pages/Home';
 import Albums from './pages/Albums';
