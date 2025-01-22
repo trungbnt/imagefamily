@@ -10,9 +10,12 @@ const app = express();
 
 app.use(cors({
   origin: [
-    'http://localhost:3000', 
-    'https://imagefamily-8k5s460jn-trungcrs-projects.vercel.app'
-  ]
+    'http://localhost:3000',
+    'https://imagefamily-trungcrs-projects.vercel.app',
+    'https://imagefamily-git-main-trungcrs-projects.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
 }));
 app.use(express.json());
 
