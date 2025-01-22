@@ -1,4 +1,17 @@
 {
+  "name": "image-family",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "start": "cd server && npm start",
+    "build": "cd client && npm run build",
+    "dev:client": "cd client && npm start",
+    "dev:server": "cd server && npm run dev"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
