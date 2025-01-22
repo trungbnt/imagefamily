@@ -2,14 +2,9 @@
   "name": "image-family",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "client",
-    "server"
-  ],
   "scripts": {
     "start": "cd server && npm start",
-    "build": "cd client && npm run build",
-    "vercel-build": "cd client && npm run vercel-build"
+    "build": "cd client && npm install && npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
