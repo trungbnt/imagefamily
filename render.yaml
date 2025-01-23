@@ -2,16 +2,18 @@ services:
   - type: web
     name: imagefamily
     env: node
+    plan: free
     buildCommand: npm run install-all && npm run build
-    startCommand: npm start
+    startCommand: cd server && node index.js
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: MONGODB_URI
-        value: mongodb+srv://cr7204:B1Sq2eWubK9YgLT1@imagefamilydb.owlnd.mongodb.net/
+        value: mongodb+srv://cr7204:B1Sq2eWubK9YgLT1@imagefamilydb.owlnd.mongodb.net/test
       - key: CLOUDINARY_CLOUD_NAME
         value: dvejazi2x
       - key: CLOUDINARY_API_KEY
         value: 922224397558399
       - key: CLOUDINARY_API_SECRET
         value: TpsNontdG5m0Btw1SUpcyUiD1Ms
-      - key: NODE_ENV
-        value: production 
+    healthCheckPath: /api/health 
