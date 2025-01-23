@@ -35,9 +35,9 @@ const connectWithRetry = () => {
 connectWithRetry();
 
 // API routes
+app.use('/api/categories', require('./routes/categories'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/albums', require('./routes/albums'));
-app.use('/api/categories', require('./routes/categories'));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '../client/build')));

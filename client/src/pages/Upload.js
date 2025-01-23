@@ -40,17 +40,24 @@ const Upload = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('/api/categories');
-      console.log('Categories:', response.data);
-      setCategories(response.data);
+      console.log('Categories response:', response);
+      if (response.data && Array.isArray(response.data)) {
+        setCategories(response.data);
+      } else {
+        console.error('Invalid categories data:', response.data);
+        setCategories([]);
+      }
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories([]);
     }
   };
 
   const handleAddCategory = async (newCategory) => {
     try {
-      await axios.post('/api/categories', newCategory);
-      fetchCategories();
+      const response = await axios.post('/api/categories', newCategory);
+      console.log('Add category response:', response);
+      await fetchCategories();
     } catch (error) {
       console.error('Error adding category:', error);
       alert('Lỗi khi thêm danh mục');
@@ -168,11 +175,15 @@ const Upload = () => {
             label="Danh mục"
             onChange={(e) => handleCategoryChange(null, e.target.value)}
           >
-            {categories.map((category) => (
-              <MenuItem key={category._id} value={category._id}>
-                {category.name}
-              </MenuItem>
-            ))}
+            {categories && categories.length > 0 ? (
+              categories.map((category) => (
+                <MenuItem key={category._id} value={category._id}>
+                  {category.name}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Không có danh mục nào</MenuItem>
+            )}
           </Select>
         </FormControl>
 

@@ -8,14 +8,18 @@ import Home from './pages/Home';
 import Albums from './pages/Albums';
 
 // Cấu hình axios
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' 
-  ? ''  // Để trống vì đã có proxy
+axios.defaults.baseURL = process.env.NODE_ENV === 'production'
+  ? 'https://imagefamily.onrender.com'  // URL đầy đủ của server
   : 'http://localhost:5000';
 
-axios.interceptors.request.use((config) => {
-  // Thêm headers nếu cần
-  return config;
-});
+// Thêm interceptor để xử lý lỗi
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error);
+    return Promise.reject(error);
+  }
+);
 
 function App() {
   // Tạm thời bỏ darkMode nếu chưa dùng
