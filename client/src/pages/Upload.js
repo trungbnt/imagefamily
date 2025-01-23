@@ -29,7 +29,10 @@ const Upload = () => {
   const [previewFiles, setPreviewFiles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false);
-  
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [previewUrls, setPreviewUrls] = useState([]);
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -98,6 +101,10 @@ const Upload = () => {
       category: defaultCategory
     }));
     setPreviewFiles(previews);
+
+    // Create preview URLs
+    const urls = validFiles.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
   };
 
   const handleCategoryChange = (fileIndex, newCategory) => {
@@ -106,58 +113,34 @@ const Upload = () => {
     ));
     // Cập nhật category mặc định cho các file tiếp theo
     setDefaultCategory(newCategory);
+    setSelectedCategory(newCategory);
   };
 
   const handleUpload = async () => {
-    setUploading(true);
-    setProgress(0);
-    
+    if (!selectedFiles.length || !selectedCategory) {
+      alert('Vui lòng chọn ảnh và danh mục');
+      return;
+    }
+
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+      formData.append('images', file);
+    });
+    formData.append('categoryId', selectedCategory);
+
     try {
-      const totalFiles = previewFiles.length;
-      let completed = 0;
-
-      const uploadFile = async (fileInfo) => {
-        const formData = new FormData();
-        formData.append('image', fileInfo.file);
-        formData.append('title', fileInfo.file.name);
-        console.log('Uploading file with category:', fileInfo.category);
-        formData.append('category', fileInfo.category || defaultCategory);
-
-        await axios.post('http://localhost:5000/api/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setProgress((completed * 100 + percentCompleted) / totalFiles);
-          }
-        });
-        completed++;
-      };
-
-      for (const fileInfo of previewFiles) {
-        await uploadFile(fileInfo);
-      }
-
-      setProgress(100);
+      await axios.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       alert('Upload thành công!');
-      
-      // Xóa các preview URLs
-      previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
-      setPreviewFiles([]);
-      
-      // Chuyển hướng đến trang albums sau 1 giây
-      setTimeout(() => {
-        navigate('/albums');
-      }, 1000);
-      
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+      setSelectedCategory('');
     } catch (error) {
-      console.error('Upload failed:', error);
-      alert('Upload thất bại: ' + error.message);
-    } finally {
-      setUploading(false);
+      console.error('Error uploading:', error);
+      alert('Upload thất bại!');
     }
   };
 
@@ -177,81 +160,57 @@ const Upload = () => {
           </Button>
         </Box>
         
-        <Box sx={{ textAlign: 'center', my: 4 }}>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Danh mục</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Danh mục"
+            onChange={(e) => handleCategoryChange(null, e.target.value)}
+          >
+            {categories.map((category) => (
+              <MenuItem key={category._id} value={category._id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="contained"
+          component="label"
+          sx={{ mb: 2 }}
+        >
+          Chọn hình ảnh
           <input
-            accept="image/jpeg,image/png"
-            style={{ display: 'none' }}
-            id="upload-file"
-            multiple
             type="file"
+            hidden
+            multiple
+            accept="image/*"
             onChange={handleFileSelect}
           />
-          <label htmlFor="upload-file">
-            <Button
-              variant="contained"
-              component="span"
-              startIcon={<CloudUploadIcon />}
-            >
-              Chọn hình ảnh
-            </Button>
-          </label>
+        </Button>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+          {previewUrls.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt={`Preview ${index}`}
+              style={{ width: 200, height: 200, objectFit: 'cover' }}
+            />
+          ))}
         </Box>
 
-        {previewFiles.length > 0 && (
-          <>
-            <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-              Xem trước và chọn danh mục
-            </Typography>
-            <Grid container spacing={2}>
-              {previewFiles.map((fileInfo, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image={fileInfo.preview}
-                      alt={fileInfo.file.name}
-                    />
-                    <CardContent>
-                      <Typography noWrap>{fileInfo.file.name}</Typography>
-                      <FormControl fullWidth size="small" sx={{ mt: 1 }}>
-                        <InputLabel>Danh mục</InputLabel>
-                        <Select
-                          value={fileInfo.category}
-                          onChange={(e) => handleCategoryChange(index, e.target.value)}
-                          label="Danh mục"
-                        >
-                          {categories.map((category) => (
-                            <MenuItem key={category._id} value={category.name}>
-                              {category.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-
-            <Box sx={{ mt: 3 }}>
-              <Button 
-                variant="contained" 
-                onClick={handleUpload}
-                disabled={uploading}
-                fullWidth
-              >
-                Tải lên {previewFiles.length} ảnh
-              </Button>
-            </Box>
-          </>
-        )}
-
-        {uploading && (
-          <Box sx={{ mt: 2 }}>
-            <LinearProgress variant="determinate" value={progress} />
-          </Box>
-        )}
+        <Box sx={{ mt: 3 }}>
+          <Button 
+            variant="contained" 
+            onClick={handleUpload}
+            disabled={!selectedFiles.length || !selectedCategory}
+            fullWidth
+          >
+            Tải lên {selectedFiles.length} ảnh
+          </Button>
+        </Box>
       </Paper>
 
       <CategoryManager

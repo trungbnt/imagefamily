@@ -2,34 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
 
-// Lấy tất cả danh mục
+// Get all categories
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find().sort({ order: 1 });
+    const categories = await Category.find();
     res.json(categories);
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi lấy danh sách danh mục', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Thêm danh mục mới
+// Create new category
 router.post('/', async (req, res) => {
+  const category = new Category({
+    name: req.body.name
+  });
+
   try {
-    const { name, description } = req.body;
-    const maxOrder = await Category.findOne().sort('-order');
-    const order = maxOrder ? maxOrder.order + 1 : 0;
-    
-    const category = new Category({ 
-      name, 
-      description,
-      order,
-      parentId: null
-    });
-    
-    await category.save();
-    res.status(201).json(category);
+    const newCategory = await category.save();
+    res.status(201).json(newCategory);
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi thêm danh mục', error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
