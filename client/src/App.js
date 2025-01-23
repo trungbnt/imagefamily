@@ -5,6 +5,12 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Upload from './pages/Upload';
 import Home from './pages/Home';
 import Albums from './pages/Albums';
+import axios from 'axios';
+
+// Cấu hình base URL cho axios
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' 
+  ? 'https://imagefamily.vercel.app/api'
+  : 'http://localhost:5000/api';
 
 function App() {
   // Tạm thời bỏ darkMode nếu chưa dùng

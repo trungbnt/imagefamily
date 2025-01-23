@@ -9,8 +9,11 @@ const path = require('path');
 
 const app = express();
 
+// CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://imagefamily.vercel.app'],
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://imagefamily.vercel.app']
+    : ['http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
@@ -19,7 +22,14 @@ app.use(cors({
 app.options('*', cors());
 
 // Thêm middleware để xử lý static files
-app.use(express.static(path.join(__dirname, '../client/build')));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    }
+  });
+}
 
 app.use(express.json());
 
@@ -32,13 +42,6 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/upload', uploadRoutes);
 app.use('/api/albums', albumRoutes);
 app.use('/api/categories', categoryRoutes);
-
-// Thêm route handler cho tất cả các requests không phải API
-app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
-  }
-});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
