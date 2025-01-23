@@ -4,7 +4,7 @@ const multer = require('multer');
 const cloudinary = require('../config/cloudinary');
 const Image = require('../models/Image');
 
-// Cấu hình multer để xử lý file upload
+// Cấu hình multer
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage,
@@ -16,11 +16,16 @@ const upload = multer({
 // Route upload ảnh
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    console.log('Received upload request');
+    console.log('Upload request received');
+    console.log('File:', req.file);
     console.log('Category:', req.body.category);
-    
+
     if (!req.file) {
       return res.status(400).json({ message: 'Không có file được upload' });
+    }
+
+    if (!req.body.category) {
+      return res.status(400).json({ message: 'Thiếu thông tin danh mục' });
     }
 
     // Convert buffer thành base64
@@ -33,15 +38,18 @@ router.post('/', upload.single('image'), async (req, res) => {
       resource_type: 'auto'
     });
 
+    console.log('Cloudinary result:', result);
+
     // Lưu thông tin vào database
     const image = new Image({
       title: req.file.originalname,
       url: result.secure_url,
       publicId: result.public_id,
-      category: req.body.category || 'Khác'
+      category: req.body.category
     });
 
     await image.save();
+    console.log('Saved image:', image);
 
     res.status(201).json({
       message: 'Upload thành công',
@@ -49,10 +57,11 @@ router.post('/', upload.single('image'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Upload error details:', error);
     res.status(500).json({
       message: 'Lỗi khi upload ảnh',
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 });

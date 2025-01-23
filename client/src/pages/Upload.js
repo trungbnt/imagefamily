@@ -125,19 +125,24 @@ const Upload = () => {
     }
 
     try {
-      const formData = new FormData();
-      selectedFiles.forEach(file => {
+      // Upload từng ảnh một
+      for (let file of selectedFiles) {
+        const formData = new FormData();
         formData.append('image', file);
-      });
-      formData.append('category', selectedCategory);
+        formData.append('category', selectedCategory);
 
-      const response = await axios.post('/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+        console.log('Uploading file:', file.name);
+        console.log('Category:', selectedCategory);
 
-      console.log('Upload response:', response);
+        const response = await axios.post('/api/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        console.log('Upload response:', response);
+      }
+
       alert('Upload thành công!');
       setSelectedFiles([]);
       setPreviewUrls([]);
@@ -145,7 +150,7 @@ const Upload = () => {
 
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload thất bại!');
+      alert(`Upload thất bại: ${error.response?.data?.message || error.message}`);
     }
   };
 

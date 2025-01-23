@@ -13,10 +13,10 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true
+  category: {
+    type: String,
+    required: true,
+    default: 'Khác'
   },
   order: {
     type: Number,
