@@ -102,13 +102,7 @@ const Upload = () => {
       return true;
     });
 
-    // Tạo preview cho các file với category được chọn hiện tại
-    const previews = validFiles.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      category: defaultCategory
-    }));
-    setPreviewFiles(previews);
+    setSelectedFiles(validFiles);
 
     // Create preview URLs
     const urls = validFiles.map(file => URL.createObjectURL(file));
@@ -137,7 +131,7 @@ const Upload = () => {
     formData.append('categoryId', selectedCategory);
 
     try {
-      await axios.post('/upload', formData, {
+      await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -217,7 +211,7 @@ const Upload = () => {
           <Button 
             variant="contained" 
             onClick={handleUpload}
-            disabled={!selectedFiles.length || !selectedCategory}
+            disabled={selectedFiles.length === 0 || !selectedCategory}
             fullWidth
           >
             Tải lên {selectedFiles.length} ảnh
