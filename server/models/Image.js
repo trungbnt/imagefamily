@@ -13,9 +13,14 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  category: {
-    type: String,
-    default: 'Khác'
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
+  },
+  order: {
+    type: Number,
+    default: 0
   },
   description: String,
   createdAt: {
@@ -31,7 +36,8 @@ const imageSchema = new mongoose.Schema({
     ref: 'Album'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  collection: 'images'
 });
 
 module.exports = mongoose.model('Image', imageSchema); 

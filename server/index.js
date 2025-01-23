@@ -22,9 +22,10 @@ const connectWithRetry = () => {
     retryWrites: true,
     w: 'majority',
     ssl: true,
-    authSource: 'admin'
+    authSource: 'admin',
+    dbName: 'test'
   })
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => console.log('Connected to MongoDB - Database: test'))
   .catch(err => {
     console.error('MongoDB connection error:', err);
     console.log('Retrying in 5 seconds...');
