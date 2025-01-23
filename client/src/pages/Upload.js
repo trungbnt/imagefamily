@@ -110,11 +110,12 @@ const Upload = () => {
   };
 
   const handleCategoryChange = (fileIndex, newCategory) => {
+    const category = categories.find(c => c._id === newCategory);
     setPreviewFiles(prev => prev.map((item, index) => 
-      index === fileIndex ? { ...item, category: newCategory } : item
+      index === fileIndex ? { ...item, category: category.name } : item
     ));
     // Cập nhật category mặc định cho các file tiếp theo
-    setDefaultCategory(newCategory);
+    setDefaultCategory(category.name);
     setSelectedCategory(newCategory);
   };
 
@@ -125,14 +126,16 @@ const Upload = () => {
     }
 
     try {
+      const selectedCategoryObj = categories.find(c => c._id === selectedCategory);
+      
       // Upload từng ảnh một
       for (let file of selectedFiles) {
         const formData = new FormData();
         formData.append('image', file);
-        formData.append('category', selectedCategory);
+        formData.append('category', selectedCategoryObj.name); // Gửi tên category thay vì ID
 
         console.log('Uploading file:', file.name);
-        console.log('Category:', selectedCategory);
+        console.log('Category:', selectedCategoryObj.name);
 
         const response = await axios.post('/api/upload', formData, {
           headers: {
@@ -147,6 +150,9 @@ const Upload = () => {
       setSelectedFiles([]);
       setPreviewUrls([]);
       setSelectedCategory('');
+      
+      // Chuyển hướng về trang albums
+      navigate('/albums');
 
     } catch (error) {
       console.error('Upload error:', error);
