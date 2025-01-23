@@ -9,7 +9,7 @@ import Albums from './pages/Albums';
 
 // Cấu hình axios
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' 
-  ? 'https://imagefamily.vercel.app/api'
+  ? 'https://imagefamily.onrender.com/api'
   : 'http://localhost:5000/api';
 
 axios.interceptors.request.use((config) => {
