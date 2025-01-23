@@ -9,8 +9,8 @@ import Albums from './pages/Albums';
 
 // Cấu hình axios
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' 
-  ? 'https://imagefamily.onrender.com/api'
-  : 'http://localhost:5000/api';
+  ? ''  // Để trống vì đã có proxy
+  : 'http://localhost:5000';
 
 axios.interceptors.request.use((config) => {
   // Thêm headers nếu cần

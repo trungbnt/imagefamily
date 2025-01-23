@@ -39,7 +39,8 @@ const Upload = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/categories`);
+      const response = await axios.get('/api/categories');
+      console.log('Categories:', response.data);
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -48,7 +49,7 @@ const Upload = () => {
 
   const handleAddCategory = async (newCategory) => {
     try {
-      await axios.post('http://localhost:5000/api/categories', newCategory);
+      await axios.post('/api/categories', newCategory);
       fetchCategories();
     } catch (error) {
       console.error('Error adding category:', error);
@@ -58,7 +59,7 @@ const Upload = () => {
 
   const handleEditCategory = async (id, updatedCategory) => {
     try {
-      await axios.put(`http://localhost:5000/api/categories/${id}`, updatedCategory);
+      await axios.put(`/api/categories/${id}`, updatedCategory);
       fetchCategories();
     } catch (error) {
       console.error('Error updating category:', error);
@@ -69,7 +70,7 @@ const Upload = () => {
   const handleDeleteCategory = async (id) => {
     if (window.confirm('Bạn có chắc muốn xóa danh mục này?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/categories/${id}`);
+        await axios.delete(`/api/categories/${id}`);
         fetchCategories();
       } catch (error) {
         console.error('Error deleting category:', error);
