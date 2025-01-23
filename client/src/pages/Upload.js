@@ -124,42 +124,28 @@ const Upload = () => {
       return;
     }
 
-    setUploading(true);
-    setProgress(0);
-
     try {
       const formData = new FormData();
       selectedFiles.forEach(file => {
-        formData.append('images', file);
+        formData.append('image', file);
       });
-      formData.append('categoryId', selectedCategory);
+      formData.append('category', selectedCategory);
 
       const response = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setProgress(percentCompleted);
         }
       });
 
       console.log('Upload response:', response);
       alert('Upload thành công!');
-      
-      // Reset states
       setSelectedFiles([]);
       setPreviewUrls([]);
       setSelectedCategory('');
-      setProgress(0);
 
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Upload thất bại: ${error.response?.data?.message || error.message}`);
-    } finally {
-      setUploading(false);
+      alert('Upload thất bại!');
     }
   };
 
@@ -224,16 +210,14 @@ const Upload = () => {
           ))}
         </Box>
 
-        <Box sx={{ mt: 3 }}>
-          <Button 
-            variant="contained" 
-            onClick={handleUpload}
-            disabled={selectedFiles.length === 0 || !selectedCategory}
-            fullWidth
-          >
-            Tải lên {selectedFiles.length} ảnh
-          </Button>
-        </Box>
+        <Button 
+          variant="contained" 
+          onClick={handleUpload}
+          disabled={selectedFiles.length === 0 || !selectedCategory}
+          fullWidth
+        >
+          Tải lên {selectedFiles.length} ảnh
+        </Button>
       </Paper>
 
       <CategoryManager
