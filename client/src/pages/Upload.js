@@ -124,25 +124,42 @@ const Upload = () => {
       return;
     }
 
-    const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('images', file);
-    });
-    formData.append('categoryId', selectedCategory);
+    setUploading(true);
+    setProgress(0);
 
     try {
-      await axios.post('/api/upload', formData, {
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('images', file);
+      });
+      formData.append('categoryId', selectedCategory);
+
+      const response = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setProgress(percentCompleted);
         }
       });
+
+      console.log('Upload response:', response);
       alert('Upload thành công!');
+      
+      // Reset states
       setSelectedFiles([]);
       setPreviewUrls([]);
       setSelectedCategory('');
+      setProgress(0);
+
     } catch (error) {
-      console.error('Error uploading:', error);
-      alert('Upload thất bại!');
+      console.error('Upload error:', error);
+      alert(`Upload thất bại: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setUploading(false);
     }
   };
 

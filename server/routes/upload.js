@@ -1,68 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 const cloudinary = require('../config/cloudinary');
 const Image = require('../models/Image');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Cấu hình multer để xử lý file upload
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB
-  }
-});
-
-// Route upload ảnh
-router.post('/', upload.single('image'), async (req, res) => {
+// Upload multiple images
+router.post('/', upload.array('images'), async (req, res) => {
   try {
-    console.log('Received upload request');
-    console.log('Category:', req.body.category); // Thêm log để debug
-    
-    if (!req.file) {
-      console.log('No file uploaded');
-      return res.status(400).json({ message: 'Không có file được upload' });
+    console.log('Upload request received:', {
+      files: req.files?.length,
+      categoryId: req.body.categoryId
+    });
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No files uploaded' });
     }
 
-    // Kiểm tra kích thước file
-    console.log('File size:', req.file.size / 1024 / 1024, 'MB');
-    console.log('File received:', req.file.originalname);
+    if (!req.body.categoryId) {
+      return res.status(400).json({ message: 'Category ID is required' });
+    }
 
-    // Convert buffer thành base64
-    const b64 = Buffer.from(req.file.buffer).toString('base64');
-    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+    const uploadPromises = req.files.map(async (file) => {
+      // Convert buffer to base64
+      const b64 = Buffer.from(file.buffer).toString('base64');
+      const dataURI = `data:${file.mimetype};base64,${b64}`;
+      
+      try {
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(dataURI, {
+          folder: 'imagefamily',
+          resource_type: 'auto'
+        });
 
-    console.log('Uploading to Cloudinary...');
-    
-    // Upload lên Cloudinary
-    const result = await cloudinary.uploader.upload(dataURI, {
-      folder: 'family-photos',
-      resource_type: 'auto'
+        // Create image document
+        const image = new Image({
+          title: file.originalname,
+          url: result.secure_url,
+          publicId: result.public_id,
+          categoryId: req.body.categoryId
+        });
+
+        await image.save();
+        return image;
+
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        throw error;
+      }
     });
 
-    console.log('Cloudinary upload successful:', result.public_id);
-
-    // Lưu thông tin vào database với category
-    const image = new Image({
-      title: req.body.title || req.file.originalname,
-      url: result.secure_url,
-      publicId: result.public_id,
-      category: req.body.category || 'Khác', // Đảm bảo lưu category
-    });
-
-    await image.save();
-    console.log('Saved to database with category:', image.category);
+    const uploadedImages = await Promise.all(uploadPromises);
+    console.log('Images uploaded successfully:', uploadedImages.length);
 
     res.status(201).json({
-      message: 'Upload thành công',
-      image
+      message: 'Upload successful',
+      images: uploadedImages
     });
 
   } catch (error) {
     console.error('Upload error:', error);
-    res.status(500).json({ 
-      message: 'Lỗi khi upload ảnh',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error uploading images',
+      error: error.message
     });
   }
 });
