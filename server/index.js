@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // 🚨 Nên bỏ trong môi trường production
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,17 +6,22 @@ const path = require('path');
 
 const app = express();
 
-// CORS configuration
-app.use(cors());
+// CORS configuration - Nên hạn chế origin
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://your-render-url.onrender.com' 
+    : '*'
+}));
 
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
+// Connect to MongoDB - Thêm useCreateIndex
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true, // 👈 Thêm dòng này
   dbName: 'test'
 })
 .then(() => console.log('Connected to MongoDB - Database: test'))
@@ -30,12 +35,13 @@ app.use('/api/categories', require('./routes/categories'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/albums', require('./routes/albums'));
 
-// Serve static files
+// Serve static files - Kiểm tra lại đường dẫn
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  const clientPath = path.join(__dirname, 'client/build'); // 👈 Điều chỉnh đường dẫn
+  app.use(express.static(clientPath));
   
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    res.sendFile(path.join(clientPath, 'index.html'));
   });
 }
 
@@ -46,7 +52,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, () => { // 👈 Khai báo server
   console.log(`Server running on port ${PORT}`);
 });
 
@@ -57,4 +63,4 @@ process.on('unhandledRejection', (err) => {
   server.close(() => {
     process.exit(1);
   });
-}); 
+});
