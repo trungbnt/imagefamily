@@ -6,29 +6,24 @@ const path = require('path');
 
 const app = express();
 
-// CORS configuration - Nên hạn chế origin
+// CORS với origin thực tế
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://imagefamily.onrender.com' 
-    : '*'
+    : 'http://localhost:3000' // Thay port client dev của bạn
 }));
 
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB - Thêm useCreateIndex
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  dbName: 'test'
-})
-.then(() => console.log('Connected to MongoDB - Database: test'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+// Kết nối MongoDB đã được fix
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB - Database: test'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // API routes
 app.use('/api/categories', require('./routes/categories'));
@@ -37,7 +32,7 @@ app.use('/api/albums', require('./routes/albums'));
 
 // Serve static files - Kiểm tra lại đường dẫn
 if (process.env.NODE_ENV === 'production') {
-  const clientPath = path.join(__dirname, 'client/build');
+  const clientPath = path.join(__dirname, '../client/build');
   app.use(express.static(clientPath));
   
   app.get('*', (req, res) => {
