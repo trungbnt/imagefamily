@@ -8,9 +8,7 @@ import Home from './pages/Home';
 import Albums from './pages/Albums';
 
 // Cấu hình axios
-axios.defaults.baseURL = process.env.NODE_ENV === 'production'
-  ? 'https://imagefamily.onrender.com'  // URL đầy đủ của server
-  : 'http://localhost:5000';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Thêm interceptor để xử lý lỗi
 axios.interceptors.response.use(
