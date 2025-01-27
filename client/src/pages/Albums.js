@@ -56,7 +56,7 @@ const Albums = () => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/albums');
+      const response = await axios.get('/api/albums');
       setImages(response.data);
     } catch (error) {
       console.error('Error fetching images:', error);
@@ -67,7 +67,7 @@ const Albums = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/categories');
+      const response = await axios.get('/api/categories');
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -109,7 +109,7 @@ const Albums = () => {
 
   const handleEditSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/albums/${selectedImage._id}`, {
+      await axios.put(`/api/albums/${selectedImage._id}`, {
         title: editTitle,
         category: editCategory
       });
@@ -128,7 +128,7 @@ const Albums = () => {
     event.stopPropagation();
     if (window.confirm('Bạn có chắc muốn xóa ảnh này?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/albums/${selectedImage._id}`);
+        await axios.delete(`/api/albums/${selectedImage._id}`);
         handleMenuClose(event);
         fetchImages();
       } catch (error) {
@@ -140,7 +140,7 @@ const Albums = () => {
 
   const handleAddCategory = async (newCategory) => {
     try {
-      await axios.post('http://localhost:5000/api/categories', newCategory);
+      await axios.post('/api/categories', newCategory);
       fetchCategories();
     } catch (error) {
       console.error('Error adding category:', error);
@@ -150,7 +150,7 @@ const Albums = () => {
 
   const handleEditCategory = async (id, updatedCategory) => {
     try {
-      await axios.put(`http://localhost:5000/api/categories/${id}`, updatedCategory);
+      await axios.put(`/api/categories/${id}`, updatedCategory);
       fetchCategories();
     } catch (error) {
       console.error('Error updating category:', error);
@@ -161,7 +161,7 @@ const Albums = () => {
   const handleDeleteCategory = async (id) => {
     if (window.confirm('Bạn có chắc muốn xóa danh mục này?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/categories/${id}`);
+        await axios.delete(`/api/categories/${id}`);
         fetchCategories();
       } catch (error) {
         console.error('Error deleting category:', error);
