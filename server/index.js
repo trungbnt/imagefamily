@@ -1,4 +1,4 @@
-require('dotenv').config(); // 🚨 Nên bỏ trong môi trường production
+require('dotenv').config(); 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,7 +9,7 @@ const app = express();
 // CORS configuration - Nên hạn chế origin
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://your-render-url.onrender.com' 
+    ? 'https://imagefamily.onrender.com' 
     : '*'
 }));
 
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true, // 👈 Thêm dòng này
+  useCreateIndex: true,
   dbName: 'test'
 })
 .then(() => console.log('Connected to MongoDB - Database: test'))
@@ -37,7 +37,7 @@ app.use('/api/albums', require('./routes/albums'));
 
 // Serve static files - Kiểm tra lại đường dẫn
 if (process.env.NODE_ENV === 'production') {
-  const clientPath = path.join(__dirname, 'client/build'); // 👈 Điều chỉnh đường dẫn
+  const clientPath = path.join(__dirname, 'client/build');
   app.use(express.static(clientPath));
   
   app.get('*', (req, res) => {
@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => { // 👈 Khai báo server
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
