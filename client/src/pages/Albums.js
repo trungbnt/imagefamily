@@ -21,7 +21,8 @@ import {
   DialogActions,
   Menu,
   MenuItem as MenuItemMUI,
-  Button
+  Button,
+  Modal
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ImageViewer from '../components/ImageViewer';
@@ -33,6 +34,8 @@ import { useNavigate } from 'react-router-dom';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CategoryManager from '../components/CategoryManager';
 import SettingsIcon from '@mui/icons-material/Settings';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const Albums = () => {
   const navigate = useNavigate();
@@ -48,6 +51,7 @@ const Albums = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     fetchImages();
@@ -74,9 +78,20 @@ const Albums = () => {
     }
   };
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
+  const handleImageClick = (index) => {
+    setCurrentImageIndex(index);
+    setSelectedImage(images[index]);
     setViewerOpen(true);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setSelectedImage(images[currentImageIndex]);
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setSelectedImage(images[currentImageIndex]);
   };
 
   // Lọc ảnh theo tìm kiếm và danh mục
@@ -245,7 +260,7 @@ const Albums = () => {
         </Typography>
       ) : (
         <Grid container spacing={3}>
-          {filteredImages.map((image) => (
+          {filteredImages.map((image, index) => (
             <Grid item xs={12} sm={6} md={4} key={image._id}>
               <Card 
                 sx={{ 
@@ -258,7 +273,7 @@ const Albums = () => {
                     transition: 'transform 0.2s'
                   }
                 }}
-                onClick={() => handleImageClick(image)}
+                onClick={() => handleImageClick(index)}
               >
                 <IconButton
                   sx={{ position: 'absolute', right: 8, top: 8, bgcolor: 'rgba(255,255,255,0.8)' }}
@@ -338,11 +353,80 @@ const Albums = () => {
         </DialogActions>
       </Dialog>
 
-      <ImageViewer
+      <Modal
         open={viewerOpen}
         onClose={() => setViewerOpen(false)}
-        image={selectedImage}
-      />
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Box sx={{ 
+          position: 'relative',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          bgcolor: 'background.paper',
+          borderRadius: 1,
+          p: 1
+        }}>
+          <img
+            src={selectedImage?.url}
+            alt={selectedImage?.title}
+            style={{ 
+              maxWidth: '100%',
+              maxHeight: '85vh',
+              objectFit: 'contain'
+            }}
+          />
+          
+          {/* Navigation Buttons */}
+          <IconButton
+            onClick={handlePrevImage}
+            sx={{
+              position: 'absolute',
+              left: 10,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(0,0,0,0.5)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+              color: 'white'
+            }}
+          >
+            <NavigateBeforeIcon />
+          </IconButton>
+
+          <IconButton
+            onClick={handleNextImage}
+            sx={{
+              position: 'absolute',
+              right: 10,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(0,0,0,0.5)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+              color: 'white'
+            }}
+          >
+            <NavigateNextIcon />
+          </IconButton>
+
+          {/* Image Counter */}
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: 10,
+              right: 10,
+              color: 'white',
+              bgcolor: 'rgba(0,0,0,0.5)',
+              px: 1,
+              borderRadius: 1
+            }}
+          >
+            {currentImageIndex + 1} / {images.length}
+          </Typography>
+        </Box>
+      </Modal>
 
       <CategoryManager
         open={categoryManagerOpen}
@@ -356,4 +440,4 @@ const Albums = () => {
   );
 };
 
-export default Albums; 
+export default Albums;
