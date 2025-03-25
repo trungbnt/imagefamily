@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import axios from 'axios';
 import Upload from './pages/Upload';
@@ -13,7 +12,7 @@ import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 
 // Cấu hình axios
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 // Thêm interceptor để xử lý lỗi
 axios.interceptors.response.use(
@@ -51,16 +50,17 @@ function App() {
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
+            <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
             
-            {/* Member routes */}
+            {/* Protected routes */}
             <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-            
-            {/* Admin only routes */}
-            <Route path="/" element={<AdminRoute><Albums /></AdminRoute>} />
             <Route path="/albums" element={<AdminRoute><Albums /></AdminRoute>} />
             <Route path="/upload" element={<AdminRoute><Upload /></AdminRoute>} />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
