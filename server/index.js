@@ -8,31 +8,38 @@ const passport = require('passport');
 
 const app = express();
 
-// CORS với origin thực tế
+// Middleware
+app.use(express.json());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000' // Thay port client dev của bạn
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
 }));
 
-// Body parser middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Test route
+app.get('/', (req, res) => {
+  res.json({ message: 'Server is running' });
+});
 
-// Kết nối MongoDB đã được fix
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB - Database: test'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 // Cấu hình Passport
 app.use(passport.initialize());
 
-// API routes
-app.use('/api/categories', require('./routes/categories'));
-app.use('/api/upload', require('./routes/upload'));
-app.use('/api/albums', require('./routes/albums'));
+// Routes
+const uploadRoutes = require('./routes/upload');
+const albumsRoutes = require('./routes/albums');
+const categoriesRoutes = require('./routes/categories');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/albums', albumsRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 // Serve static files - Kiểm tra lại đường dẫn
 if (process.env.NODE_ENV === 'production') {
@@ -51,15 +58,20 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+// Export the app for Vercel
+module.exports = app;
+
+// Start server if not in Vercel environment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.error(err);
-  server.close(() => {
-    process.exit(1);
-  });
+  process.exit(1);
 });
