@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const authRoutes = require('./routes/auth');
+const passport = require('passport');
 
 const app = express();
 
@@ -25,10 +27,14 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
+// Cấu hình Passport
+app.use(passport.initialize());
+
 // API routes
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/albums', require('./routes/albums'));
+app.use('/api/auth', authRoutes);
 
 // Serve static files - Kiểm tra lại đường dẫn
 if (process.env.NODE_ENV === 'production') {

@@ -6,6 +6,10 @@ import axios from 'axios';
 import Upload from './pages/Upload';
 import Home from './pages/Home';
 import Albums from './pages/Albums';
+import { AuthProvider } from './contexts/AuthContext';
+import Login from './pages/Login';
+import AuthCallback from './pages/AuthCallback';
+import PrivateRoute from './components/PrivateRoute';
 
 // Cấu hình axios
 axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -30,13 +34,16 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/albums" element={<Albums />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route path="/" element={<PrivateRoute><Albums /></PrivateRoute>} />
+            <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
