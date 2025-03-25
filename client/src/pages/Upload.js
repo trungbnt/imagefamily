@@ -20,8 +20,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import CategoryManager from '../components/CategoryManager';
+import { useAuth } from '../contexts/AuthContext';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Avatar from '@mui/material/Avatar';
 
 const Upload = () => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -160,8 +164,41 @@ const Upload = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Box sx={{ mt: 4, mb: 4, display: 'flex', justifyContent: 'flex-end' }}>
+        {user && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {user.picture && (
+              <Avatar 
+                src={user.picture} 
+                alt={user.name}
+                sx={{ mr: 2 }}
+              />
+            )}
+            <Typography variant="body1" sx={{ mr: 2 }}>
+              Xin chào, {user.name}
+            </Typography>
+            <Button 
+              variant="outlined" 
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </Button>
+          </Box>
+        )}
+      </Box>
+
       <Paper sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5">

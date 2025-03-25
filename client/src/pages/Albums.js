@@ -36,8 +36,12 @@ import CategoryManager from '../components/CategoryManager';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useAuth } from '../contexts/AuthContext';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Avatar from '@mui/material/Avatar';
 
 const Albums = () => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -185,6 +189,15 @@ const Albums = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -195,6 +208,31 @@ const Albums = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      {/* Add user info header */}
+      <Box sx={{ mt: 4, mb: 4, display: 'flex', justifyContent: 'flex-end' }}>
+        {user && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {user.picture && (
+              <Avatar 
+                src={user.picture} 
+                alt={user.name}
+                sx={{ mr: 2 }}
+              />
+            )}
+            <Typography variant="body1" sx={{ mr: 2 }}>
+              Xin chào, {user.name}
+            </Typography>
+            <Button 
+              variant="outlined" 
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </Button>
+          </Box>
+        )}
+      </Box>
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4">
           Album Ảnh Gia Đình

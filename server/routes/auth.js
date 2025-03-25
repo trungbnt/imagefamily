@@ -65,14 +65,13 @@ router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
+// Thêm biến môi trường CLIENT_URL vào file .env
+const clientURL = process.env.CLIENT_URL || 'http://localhost:3000';
+
 router.get('/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
     const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET);
-    // Chuyển hướng về client app với token
-    const clientURL = process.env.NODE_ENV === 'production' 
-      ? 'https://imagefamily.onrender.com' 
-      : 'http://localhost:3000';
     res.redirect(`${clientURL}/auth-callback?token=${token}`);
   }
 );
@@ -85,10 +84,6 @@ router.get('/facebook/callback',
   passport.authenticate('facebook', { session: false }),
   (req, res) => {
     const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET);
-    // Chuyển hướng về client app với token
-    const clientURL = process.env.NODE_ENV === 'production' 
-      ? 'https://imagefamily.onrender.com' 
-      : 'http://localhost:3000';
     res.redirect(`${clientURL}/auth-callback?token=${token}`);
   }
 );
