@@ -13,8 +13,12 @@ const AuthCallback = () => {
 
     if (token) {
       login(token)
-        .then(() => {
-          navigate('/');
+        .then((user) => {
+          if (user.role === 'admin') {
+            navigate('/albums');
+          } else {
+            navigate('/home');
+          }
         })
         .catch(() => {
           navigate('/login');

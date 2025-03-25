@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
     })
     .then(response => {
       setUser(response.data);
+      return response.data;
     });
   };
 

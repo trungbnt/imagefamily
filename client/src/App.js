@@ -10,6 +10,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute';
 
 // Cấu hình axios
 axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -21,6 +22,18 @@ axios.interceptors.response.use(
     console.error('API Error:', error);
     return Promise.reject(error);
   }
+);
+
+// Thêm token vào mọi request
+axios.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => Promise.reject(error)
 );
 
 function App() {
@@ -37,10 +50,17 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
-            <Route path="/" element={<PrivateRoute><Albums /></PrivateRoute>} />
-            <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
+            
+            {/* Member routes */}
+            <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+            
+            {/* Admin only routes */}
+            <Route path="/" element={<AdminRoute><Albums /></AdminRoute>} />
+            <Route path="/albums" element={<AdminRoute><Albums /></AdminRoute>} />
+            <Route path="/upload" element={<AdminRoute><Upload /></AdminRoute>} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
