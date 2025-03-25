@@ -10,9 +10,7 @@ const app = express();
 
 // CORS với origin thực tế
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://imagefamily.onrender.com' 
-    : 'http://localhost:3000' // Thay port client dev của bạn
+  origin: process.env.CLIENT_URL || 'http://localhost:3000' // Thay port client dev của bạn
 }));
 
 // Body parser middleware
