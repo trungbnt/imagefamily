@@ -2,10 +2,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import axios from 'axios';
+import './App.css';
+import { AuthProvider } from './contexts/AuthContext';
+
+// Import pages
 import Upload from './pages/Upload';
 import Home from './pages/Home';
 import Albums from './pages/Albums';
-import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import PrivateRoute from './components/PrivateRoute';
@@ -36,35 +39,48 @@ axios.interceptors.request.use(
 );
 
 function App() {
-  // Tạm thời bỏ darkMode nếu chưa dùng
   const theme = createTheme({
     palette: {
-      mode: 'light',
+      primary: {
+        main: '#4A6FA5',
+      },
+      secondary: {
+        main: '#6C757D',
+      },
+    },
+    typography: {
+      fontFamily: 'Inter, sans-serif',
     },
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
             
             {/* Protected routes */}
-            <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/dashboard" element={<PrivateRoute><Albums /></PrivateRoute>} />
             <Route path="/albums" element={<AdminRoute><Albums /></AdminRoute>} />
             <Route path="/upload" element={<AdminRoute><Upload /></AdminRoute>} />
             
+            {/* Static pages */}
+            <Route path="/about" element={<Home />} />
+            <Route path="/privacy" element={<Home />} />
+            <Route path="/terms" element={<Home />} />
+            <Route path="/cookies" element={<Home />} />
+            
             {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

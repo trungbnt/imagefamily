@@ -17,7 +17,7 @@ const AuthCallback = () => {
           if (user.role === 'admin') {
             navigate('/albums');
           } else {
-            navigate('/home');
+            navigate('/');
           }
         })
         .catch(() => {
