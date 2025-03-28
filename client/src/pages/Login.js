@@ -6,10 +6,12 @@ import axios from 'axios';
 
 const Login = () => {
   const handleGoogleLogin = () => {
+    console.log("API URL:", process.env.REACT_APP_API_URL);
     window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/google`;
   };
 
   const handleFacebookLogin = () => {
+    console.log("API URL:", process.env.REACT_APP_API_URL);
     window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/facebook`;
   };
 
